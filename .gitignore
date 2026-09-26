@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Django
+*.sqlite3
+staticfiles/
+media/
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+coverage/
+*.local
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Data / models generated locally
+data/synthetic/*.csv
+data/synthetic/*.parquet
+data/raw/
+models/*.joblib
+models/*.pkl
+
+# Logs
+*.log
+logs/
