@@ -45,3 +45,6 @@ models/*.pkl
 # Logs
 *.log
 logs/
+
+# Ruff
+.ruff_cache/
