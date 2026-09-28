@@ -25,6 +25,9 @@ cp .env.example .env
 uvicorn app.main:app --reload # documentação interativa em http://localhost:8000/docs
 ```
 
+Se a porta 5432 já estiver em uso na sua máquina, defina `DB_PORT` no `.env` (por exemplo
+`DB_PORT=5439`) e use a mesma porta no `DATABASE_URL`. O compose lê o `.env` automaticamente.
+
 Sem Docker, aplique `db/schema.sql` em um PostgreSQL 16 existente ou rode `python -m app.init_db`.
 
 Testes rodam sem banco, usando SQLite em memória:
