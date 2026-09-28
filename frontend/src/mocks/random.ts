@@ -17,3 +17,8 @@ export function round1(value: number): number {
 export function randomBetween(rand: () => number, min: number, max: number): number {
   return min + rand() * (max - min);
 }
+
+/** Sorteia enviesado para o topo do intervalo (maioria dos valores perto de `max`). */
+export function skewedHighBetween(rand: () => number, min: number, max: number, power = 3): number {
+  return max - (max - min) * rand() ** power;
+}

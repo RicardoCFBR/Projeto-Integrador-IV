@@ -1,5 +1,5 @@
 import type { Device, DeviceStatus, DeviceTelemetryPoint } from '../types/device';
-import { createSeededRandom, randomBetween, round1 } from './random';
+import { createSeededRandom, randomBetween, round1, skewedHighBetween } from './random';
 
 const DEVICE_COUNT = 400;
 
@@ -17,8 +17,8 @@ function buildDevice(index: number): Device {
   const rand = createSeededRandom(1000 + index * 97);
   const id = `DEVICE-${String(index).padStart(4, '0')}`;
 
-  const sohPercent = round1(randomBetween(rand, 78, 99));
-  const predictedRulCycles = Math.round(randomBetween(rand, 350, 1800));
+  const sohPercent = round1(skewedHighBetween(rand, 78, 99));
+  const predictedRulCycles = Math.round(skewedHighBetween(rand, 350, 1800));
 
   const temperatureMean7d = round1(randomBetween(rand, 27, 39));
   const temperatureMean30d = round1(temperatureMean7d + randomBetween(rand, -1.5, 1.5));
