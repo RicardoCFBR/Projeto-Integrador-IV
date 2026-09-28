@@ -1,14 +1,8 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
 
 function App() {
-  return (
-    <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
-      <Typography variant="h6" color="text.secondary">
-        Frontend em configuração inicial.
-      </Typography>
-    </Box>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
