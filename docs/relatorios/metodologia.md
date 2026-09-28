@@ -178,14 +178,16 @@ Evidência: histórico de commits e descrição do pull request 1.
 
 ## Evidências e onde estão
 
+Legendas e ressalvas de cada captura em `evidencias/backend/README.md`.
+
 | Evidência | Onde está | Formato |
 |---|---|---|
 | Diagrama do modelo de dados e dicionário por tabela | `docs/arquitetura/modelo-de-dados.md` | figura e tabela |
 | DDL PostgreSQL | `backend/db/schema.sql` | trecho de código ou anexo |
-| Saída de `pytest` com 35 testes | pull request 1, reproduzível localmente | print do terminal |
-| Documentação interativa da API | `http://localhost:8000/docs` com a aplicação rodando | print da tela |
-| Lista de tabelas no banco (`\dt`) e semente da política | `psql` no container do compose | print do terminal |
-| Resposta JSON de ingestão e de resumo por risco | `POST /telemetry` e `GET /predictions/summary` | trecho de código |
+| Saída de `pytest` com 35 testes | `evidencias/backend/01-pytest-35-testes.png` | print do terminal |
+| Documentação interativa da API | `evidencias/backend/03-fastapi-docs-rotas.png` | print da tela |
+| Lista de tabelas no banco (`\dt`) e semente da política | `evidencias/backend/02-psql-tabelas-e-politica-de-risco.png` | print do terminal |
+| Resposta JSON de ingestão, resumo por risco e detalhe de dispositivo | `evidencias/backend/04-...png`, `05-...png` e `06-...png` | print do terminal |
 | Histórico de commits atômicos | pull request 1 | print |
 
 ## Como reproduzir
