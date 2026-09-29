@@ -42,12 +42,15 @@ const attentionDevices = mockDevices.filter((device) => device.status === 'atten
 const generatedAlerts: Alert[] = [
   ...riskDevices.map((device, index) => {
     const rand = createSeededRandom(index + 500);
+    const isRulDriven = device.predictedRulCycles < 500;
     return {
       id: `ALERT-${String(100 + index).padStart(4, '0')}`,
-      type: 'rul_low' as const,
+      type: (isRulDriven ? 'rul_low' : 'accelerated_degradation') as const,
       severity: 'high' as const,
       deviceId: device.id,
-      message: `RUL previsto de ${device.predictedRulCycles} ciclos, abaixo do limite de segurança.`,
+      message: isRulDriven
+        ? `RUL previsto de ${device.predictedRulCycles} ciclos, abaixo do limite de segurança.`
+        : `SoH em ${device.sohPercent}%, redução acima do padrão observado recentemente.`,
       createdAt: hoursAgoIso(randomBetween(rand, 1, 72)),
       status: rand() > 0.5 ? ('new' as const) : ('viewed' as const),
     };
