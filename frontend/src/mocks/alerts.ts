@@ -1,4 +1,4 @@
-import type { Alert } from '../types/alert';
+import type { Alert, AlertType } from '../types/alert';
 import { mockDevices } from './devices';
 import { createSeededRandom, randomBetween } from './random';
 
@@ -45,7 +45,7 @@ const generatedAlerts: Alert[] = [
     const isRulDriven = device.predictedRulCycles < 500;
     return {
       id: `ALERT-${String(100 + index).padStart(4, '0')}`,
-      type: (isRulDriven ? 'rul_low' : 'accelerated_degradation') as const,
+      type: (isRulDriven ? 'rul_low' : 'accelerated_degradation') as AlertType,
       severity: 'high' as const,
       deviceId: device.id,
       message: isRulDriven
