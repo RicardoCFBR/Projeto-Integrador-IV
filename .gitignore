@@ -38,9 +38,11 @@ Thumbs.db
 # Data / models generated locally
 data/synthetic/*.csv
 data/synthetic/*.parquet
+data/processed/
 data/raw/
 models/*.joblib
 models/*.pkl
+
 
 # Logs
 *.log
