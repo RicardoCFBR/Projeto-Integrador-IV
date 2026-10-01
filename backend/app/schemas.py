@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.risk import RiskLevel
 
-DEVICE_CODE_PATTERN = r"^DEV-\d{4,6}$"
+DEVICE_CODE_PATTERN = r"^DEVICE-\d{4,6}$"
 DeviceCode = Annotated[str, Field(pattern=DEVICE_CODE_PATTERN, max_length=20)]
 
 
@@ -32,6 +32,7 @@ class TelemetryReadingIn(ApiModel):
     voltage_mv: int = Field(gt=0)
     is_charging: bool
     cycle_count: int = Field(ge=0)
+    deep_discharge_count: int = Field(default=0, ge=0)
     estimated_capacity_pct: Decimal | None = Field(default=None, ge=0, le=100)
     ram_available_mb: int | None = Field(default=None, ge=0)
     network_rx_mb: Decimal | None = Field(default=None, ge=0)
@@ -60,6 +61,7 @@ class TelemetryOut(ApiModel):
     voltage_mv: int
     is_charging: bool
     cycle_count: int
+    deep_discharge_count: int
     estimated_capacity_pct: Decimal | None
     ram_available_mb: int | None
     network_rx_mb: Decimal | None

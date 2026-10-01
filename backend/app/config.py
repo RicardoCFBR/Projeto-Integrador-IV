@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     app_name: str = "Fleet Battery Health API"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/fleet_battery"
     ingest_batch_max: int = 5000
+    frontend_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.frontend_origins.split(",") if origin.strip()]
 
 
 @lru_cache

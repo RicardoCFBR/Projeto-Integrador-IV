@@ -90,6 +90,10 @@ class BatteryTelemetry(Base):
         CheckConstraint("voltage_mv > 0", name="ck_battery_telemetry_voltage_positive"),
         CheckConstraint("cycle_count >= 0", name="ck_battery_telemetry_cycles_non_negative"),
         CheckConstraint(
+            "deep_discharge_count >= 0",
+            name="ck_battery_telemetry_deep_discharge_non_negative",
+        ),
+        CheckConstraint(
             "estimated_capacity_pct BETWEEN 0 AND 100",
             name="ck_battery_telemetry_capacity_range",
         ),
@@ -111,6 +115,9 @@ class BatteryTelemetry(Base):
     voltage_mv: Mapped[int] = mapped_column(Integer, nullable=False)
     is_charging: Mapped[bool] = mapped_column(Boolean, nullable=False)
     cycle_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    deep_discharge_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
     estimated_capacity_pct: Mapped[Decimal | None] = mapped_column(Numeric(5, 2))
     ram_available_mb: Mapped[int | None] = mapped_column(Integer)
     network_rx_mb: Mapped[Decimal | None] = mapped_column(Numeric(12, 3))
