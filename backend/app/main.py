@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, FastAPI, Query, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -130,6 +131,13 @@ def _conflict(_: Request, exc: Exception) -> JSONResponse:
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, version="0.1.0")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     app.add_exception_handler(NotFoundError, _not_found)
     app.add_exception_handler(ConflictError, _conflict)
     app.include_router(router)
