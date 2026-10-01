@@ -8,10 +8,13 @@ import { mockModelInfo } from '../mocks/modelInfo';
 import { round1 } from '../mocks/random';
 
 /**
- * Camada de acesso a dados. Hoje resolve com dados mockados; quando o backend
- * existir, cada função aqui vira uma chamada `fetch` para o endpoint real,
- * sem que as telas precisem ser alteradas.
+ * Camada de acesso a dados. Hoje resolve com dados mockados; na integração,
+ * cada função aqui passa a consumir a API FastAPI sem alterar as telas.
+ * O backend é a fonte de verdade para a política de risco; o frontend apenas
+ * traduz low/medium/high para Saudável/Atenção/Risco na camada de apresentação.
  */
+
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
 const MOCK_LATENCY_MS = 200;
 
