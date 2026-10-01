@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes virtuais dentro de ml
+.venv/
+venv/
+env/
+
+# Modelos e artefatos gerados
+artifacts/
+outputs/
+
+*.joblib
+*.pkl
