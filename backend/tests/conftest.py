@@ -47,7 +47,7 @@ def client(session_factory) -> Iterator[TestClient]:
         yield test_client
 
 
-def reading(code: str = "DEV-0001", recorded_at: str = "2026-09-20T10:00:00Z", **overrides):
+def reading(code: str = "DEVICE-0001", recorded_at: str = "2026-09-20T10:00:00Z", **overrides):
     payload = {
         "device_code": code,
         "recorded_at": recorded_at,
@@ -56,6 +56,7 @@ def reading(code: str = "DEV-0001", recorded_at: str = "2026-09-20T10:00:00Z", *
         "voltage_mv": 3900,
         "is_charging": False,
         "cycle_count": 184,
+        "deep_discharge_count": 3,
         "estimated_capacity_pct": 94.0,
         "ram_available_mb": 1536,
         "network_rx_mb": 12.5,
