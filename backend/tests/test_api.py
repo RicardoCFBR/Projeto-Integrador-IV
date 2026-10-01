@@ -35,9 +35,9 @@ def test_ingest_creates_device_and_reading(client):
     assert response.json() == {"inserted": 1, "skipped": 0}
 
     devices = client.get("/devices").json()
-    assert [d["code"] for d in devices] == ["DEV-0001"]
+    assert [d["code"] for d in devices] == ["DEVICE-0001"]
 
-    history = client.get("/devices/DEV-0001/telemetry").json()
+    history = client.get("/devices/DEVICE-0001/telemetry").json()
     assert len(history) == 1
     assert history[0]["battery_level_pct"] == 78
     assert history[0]["source"] == "synthetic"
@@ -71,18 +71,18 @@ def test_list_telemetry_since_and_descending(client):
     instants = ["2026-09-20T10:00:00Z", "2026-09-20T10:15:00Z", "2026-09-20T10:30:00Z"]
     client.post("/telemetry", json={"readings": [reading(recorded_at=t) for t in instants]})
 
-    response = client.get("/devices/DEV-0001/telemetry", params={"since": instants[0]})
+    response = client.get("/devices/DEVICE-0001/telemetry", params={"since": instants[0]})
     assert response.status_code == 200
     returned = [_as_utc(item["recorded_at"]) for item in response.json()]
     assert returned == [_as_utc(instants[2]), _as_utc(instants[1])]
 
-    limited = client.get("/devices/DEV-0001/telemetry", params={"limit": 1}).json()
+    limited = client.get("/devices/DEVICE-0001/telemetry", params={"limit": 1}).json()
     assert len(limited) == 1
     assert _as_utc(limited[0]["recorded_at"]) == _as_utc(instants[2])
 
 
 def test_telemetry_for_unknown_device_is_404(client):
-    assert client.get("/devices/DEV-9999/telemetry").status_code == 404
+    assert client.get("/devices/DEVICE-9999/telemetry").status_code == 404
 
 
 def test_register_model_and_list(client):
@@ -106,7 +106,7 @@ def test_prediction_is_classified_by_active_policy(client):
         response = client.post(
             "/predictions",
             json={
-                "device_code": "DEV-0001",
+                "device_code": "DEVICE-0001",
                 "model_id": model_id,
                 "rul_cycles": rul,
                 "telemetry_until": "2026-09-20T10:00:00Z",
@@ -116,10 +116,10 @@ def test_prediction_is_classified_by_active_policy(client):
         assert response.status_code == 201, response.text
         body = response.json()
         assert body["risk_level"] == level
-        assert body["device_code"] == "DEV-0001"
+        assert body["device_code"] == "DEVICE-0001"
         assert body["model_id"] == model_id
 
-    history = client.get("/devices/DEV-0001/predictions").json()
+    history = client.get("/devices/DEVICE-0001/predictions").json()
     assert [p["risk_level"] for p in history] == ["low", "medium", "high"]
 
 
@@ -127,7 +127,7 @@ def test_prediction_for_unknown_device_is_404(client):
     model_id = _register_model(client)
     response = client.post(
         "/predictions",
-        json={"device_code": "DEV-9999", "model_id": model_id, "rul_cycles": "10"},
+        json={"device_code": "DEVICE-9999", "model_id": model_id, "rul_cycles": "10"},
     )
     assert response.status_code == 404
 
@@ -136,7 +136,7 @@ def test_prediction_for_unknown_model_is_404(client):
     client.post("/telemetry", json={"readings": [reading()]})
     response = client.post(
         "/predictions",
-        json={"device_code": "DEV-0001", "model_id": 999, "rul_cycles": "10"},
+        json={"device_code": "DEVICE-0001", "model_id": 999, "rul_cycles": "10"},
     )
     assert response.status_code == 404
 
@@ -144,7 +144,7 @@ def test_prediction_for_unknown_model_is_404(client):
 def test_summary_uses_latest_prediction_per_device(client):
     client.post(
         "/telemetry",
-        json={"readings": [reading("DEV-0001"), reading("DEV-0002"), reading("DEV-0003")]},
+        json={"readings": [reading("DEVICE-0001"), reading("DEVICE-0002"), reading("DEVICE-0003")]},
     )
     model_id = _register_model(client)
 
@@ -154,9 +154,9 @@ def test_summary_uses_latest_prediction_per_device(client):
         )
         assert response.status_code == 201, response.text
 
-    predict("DEV-0001", "24")
-    predict("DEV-0001", "284")
-    predict("DEV-0002", "103")
+    predict("DEVICE-0001", "24")
+    predict("DEVICE-0001", "284")
+    predict("DEVICE-0002", "103")
 
     summary = client.get("/predictions/summary").json()
     assert summary == {
@@ -170,16 +170,16 @@ def test_device_detail_includes_latest_prediction(client):
     client.post("/telemetry", json={"readings": [reading()]})
     model_id = _register_model(client)
     client.post(
-        "/predictions", json={"device_code": "DEV-0001", "model_id": model_id, "rul_cycles": "24"}
+        "/predictions", json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "24"}
     )
     client.post(
-        "/predictions", json={"device_code": "DEV-0001", "model_id": model_id, "rul_cycles": "284"}
+        "/predictions", json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "284"}
     )
-    detail = client.get("/devices/DEV-0001").json()
-    assert detail["code"] == "DEV-0001"
+    detail = client.get("/devices/DEVICE-0001").json()
+    assert detail["code"] == "DEVICE-0001"
     assert detail["latest_prediction"]["risk_level"] == "low"
 
-    assert client.get("/devices/DEV-9999").status_code == 404
+    assert client.get("/devices/DEVICE-9999").status_code == 404
 
 
 def _as_utc(value: str) -> datetime:
