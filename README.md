@@ -46,7 +46,7 @@ Dashboard web
 ## Arquitetura prevista
 
 - **Dados e ML:** Python, pandas, scikit-learn;
-- **Backend:** Django / API REST;
+- **Backend:** FastAPI (API REST em Python), SQLAlchemy e Pydantic;
 - **Banco de dados:** PostgreSQL;
 - **Frontend:** React + Vite + Material UI + Zustand;
 - **Dados de entrada:** inicialmente sintéticos, com possibilidade de evolução para dados anonimizados ou padrões reais de operação.
@@ -98,8 +98,8 @@ Dashboard web
 | Organização do repositório | Em andamento |
 | Dados sintéticos | Pendente |
 | Modelo inicial de bateria | Pendente |
-| Backend | Pendente |
-| Banco | Pendente |
+| Backend | Solução inicial: API FastAPI com ingestão, consulta e predições, 35 testes |
+| Banco | Solução inicial: schema PostgreSQL versionado em `backend/db/schema.sql` |
 | Frontend | Pendente |
 | Validação com comunidade externa | Pendente |
 | Relatório Parcial | Em andamento |
