@@ -35,7 +35,7 @@ Os limiares de 776 e 983 ciclos são os percentis 10 e 33 do RUL dos 320 aparelh
 | Atenção | 17 | 15 |
 | Saudável | 59 | 54 |
 
-O acerto de faixa foi de 82%. Nenhum dos 11 aparelhos em risco real apareceu como saudável, mas só 4 foram marcados como risco, e 6 dos 15 em atenção real apareceram como saudáveis. Os percentis 10 e 33 foram escolhidos depois de comparados com os percentis 20 e 50 (64% de acerto) nos próprios aparelhos de teste. Essa comparação é uma contaminação leve do conjunto de teste e por isso está declarada aqui.
+O acerto de faixa foi de 82,5% (66 de 80). Nenhum dos 11 aparelhos em risco real apareceu como saudável, mas só 4 foram marcados como risco, e 6 dos 15 em atenção real apareceram como saudáveis. Os percentis 10 e 33 foram escolhidos depois de comparados com os percentis 20 e 50 (64% de acerto) nos próprios aparelhos de teste. Essa comparação é uma contaminação leve do conjunto de teste e por isso está declarada aqui.
 
 ### RUL em ciclos não é tempo restante
 
@@ -44,8 +44,8 @@ O alvo do modelo é o RUL em ciclos, que depende do ritmo de uso: um aparelho po
 | Faixa | Aparelhos | RUL previsto | Ciclos por dia | Dias quentes em 30 | Anos restantes no simulador |
 |---|---|---|---|---|---|
 | Risco | 4 | 700 | 0,48 | 19,5 | 3,8 |
-| Atenção | 17 | 866 | 0,71 | 17,1 | 3,5 |
-| Saudável | 59 | 1.198 | 0,80 | 4,0 | 4,5 |
+| Atenção | 17 | 866 | 0,71 | 17,1 | 3,4 |
+| Saudável | 59 | 1.198 | 0,80 | 3,9 | 4,5 |
 
 Por isso o alerta recomenda priorizar uma inspeção e não pede a troca imediata. Uma evolução natural é prever o RUL em dias.
 
