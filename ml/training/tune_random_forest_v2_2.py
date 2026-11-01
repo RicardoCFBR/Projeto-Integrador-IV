@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from pathlib import Path
 import json
 import time
@@ -721,6 +722,8 @@ metadata = {
     "experiment": (
         "Random Forest V2.2 Tuned"
     ),
+
+    "trained_at": datetime.now(UTC).isoformat(),
 
     "target": TARGET,
 

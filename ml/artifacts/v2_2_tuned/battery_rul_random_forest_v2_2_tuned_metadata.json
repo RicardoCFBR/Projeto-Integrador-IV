@@ -1,0 +1,61 @@
+{
+    "experiment": "Random Forest V2.2 Tuned",
+    "trained_at": "2026-11-01T15:07:00+00:00",
+    "target": "rul_cycles",
+    "features": [
+        "cycle_count",
+        "temperature_mean_7d",
+        "temperature_max_7d",
+        "temperature_std_7d",
+        "temperature_mean_30d",
+        "temperature_std_30d",
+        "hot_days_30d",
+        "daily_cycles_mean_7d",
+        "daily_cycles_std_7d",
+        "daily_cycles_mean_30d",
+        "daily_cycles_std_30d",
+        "deep_discharge_events_30d",
+        "cycle_count_change_30d",
+        "battery_level_mean_7d",
+        "voltage_mean_7d",
+        "voltage_std_7d",
+        "observation_age_days"
+    ],
+    "feature_count": 17,
+    "random_seed": 42,
+    "search": {
+        "method": "RandomizedSearchCV",
+        "n_iter": 30,
+        "cv_method": "GroupKFold",
+        "cv_splits": 5,
+        "scoring": "neg_mean_absolute_error",
+        "best_cv_mae": 122.08777178673681,
+        "best_params": {
+            "n_estimators": 500,
+            "min_samples_split": 2,
+            "min_samples_leaf": 8,
+            "max_features": "sqrt",
+            "max_depth": 8,
+            "bootstrap": true
+        }
+    },
+    "dataset": {
+        "development_devices": 320,
+        "test_devices": 80,
+        "development_rows": 48000,
+        "test_rows": 12000
+    },
+    "test_metrics": {
+        "mae_cycles": 126.83672738300477,
+        "rmse_cycles": 156.4492338808265,
+        "r2": 0.5780040622477469
+    },
+    "comparison_with_default": {
+        "default_mae": 133.7345,
+        "default_rmse": 166.0096,
+        "default_r2": 0.524853,
+        "mae_improvement_pct": 5.157810899203442,
+        "rmse_improvement_pct": 5.758923652110175
+    },
+    "elapsed_seconds": 1193.2270686626434
+}

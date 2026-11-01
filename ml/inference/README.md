@@ -36,6 +36,7 @@ O valor numérico acima é apenas um exemplo de formato. O resultado real depend
 
 ## Importante
 
-A inferência recebe features já calculadas. Uma leitura isolada de telemetria não é suficiente para
-produzir todas as variáveis de 7 e 30 dias exigidas pelo modelo. A próxima etapa de integração deve
-buscar o histórico do dispositivo, calcular as 17 features e então chamar esta camada de inferência.
+Este script recebe features já calculadas e serve para uso avulso. Uma leitura isolada de telemetria
+não é suficiente para produzir todas as variáveis de 7 e 30 dias exigidas pelo modelo. O caminho
+integrado está no backend: `POST /devices/{code}/predictions/run` busca o histórico do dispositivo,
+calcula as 17 features e executa o mesmo modelo.

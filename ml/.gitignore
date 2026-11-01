@@ -10,8 +10,12 @@ venv/
 env/
 
 # Modelos e artefatos gerados
-artifacts/
+artifacts/*
 outputs/
 
 *.joblib
 *.pkl
+
+# Final PoC model, versioned so the demo runs without repeating the tuning
+!artifacts/v2_2_tuned/
+!artifacts/v2_2_tuned/*.joblib
