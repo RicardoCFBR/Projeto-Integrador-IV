@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,7 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { DeviceTable } from '../components/devices/DeviceTable';
-import { matchesRulRange, useDeviceStore, type RulRangeFilter, type StatusFilter } from '../stores/deviceStore';
+import { useDeviceStore, type StatusFilter } from '../stores/deviceStore';
 
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Todos os status' },
@@ -16,16 +17,8 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: 'risk', label: 'Risco' },
 ];
 
-const RUL_RANGE_OPTIONS: { value: RulRangeFilter; label: string }[] = [
-  { value: 'all', label: 'Todas as faixas de RUL' },
-  { value: 'low', label: 'RUL baixo (< 700)' },
-  { value: 'medium', label: 'RUL intermediário (700–1200)' },
-  { value: 'high', label: 'RUL alto (> 1200)' },
-];
-
 export function DevicesPage() {
-  const { devices, isLoading, filters, fetchDevices, setSearch, setStatusFilter, setRulRangeFilter } =
-    useDeviceStore();
+  const { devices, isLoading, error, filters, fetchDevices, setSearch, setStatusFilter } = useDeviceStore();
 
   useEffect(() => {
     fetchDevices();
@@ -36,8 +29,7 @@ export function DevicesPage() {
     return devices.filter((device) => {
       const matchesSearch = search.length === 0 || device.id.toLowerCase().includes(search);
       const matchesStatus = filters.status === 'all' || device.status === filters.status;
-      const matchesRul = matchesRulRange(device.predictedRulCycles, filters.rulRange);
-      return matchesSearch && matchesStatus && matchesRul;
+      return matchesSearch && matchesStatus;
     });
   }, [devices, filters]);
 
@@ -81,21 +73,9 @@ export function DevicesPage() {
             </MenuItem>
           ))}
         </TextField>
-        <TextField
-          select
-          size="small"
-          label="Faixa de RUL"
-          value={filters.rulRange}
-          onChange={(event) => setRulRangeFilter(event.target.value as RulRangeFilter)}
-          sx={{ minWidth: 220 }}
-        >
-          {RUL_RANGE_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
       </Box>
+
+      {error ? <Alert severity="error">{error}</Alert> : null}
 
       {isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>

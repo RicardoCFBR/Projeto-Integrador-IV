@@ -16,8 +16,23 @@ export function TemperatureRulChart({ devices, height = 260 }: TemperatureRulCha
     <ResponsiveContainer width="100%" height={height}>
       <ScatterChart margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#E2E5E9" />
-        <XAxis type="number" dataKey="temperatura" name="Temperatura média" unit="°C" tick={{ fontSize: 12 }} />
-        <YAxis type="number" dataKey="rul" name="RUL previsto" unit=" ciclos" tick={{ fontSize: 12 }} width={56} />
+        <XAxis
+          type="number"
+          dataKey="temperatura"
+          name="Temperatura média"
+          unit="°C"
+          tick={{ fontSize: 12 }}
+          domain={['auto', 'auto']}
+        />
+        <YAxis
+          type="number"
+          dataKey="rul"
+          name="RUL previsto"
+          unit=" ciclos"
+          tick={{ fontSize: 12 }}
+          width={84}
+          domain={['auto', 'auto']}
+        />
         <ZAxis range={[36, 36]} />
         <Tooltip cursor={{ strokeDasharray: '3 3' }} />
         <Scatter data={data} fill="#1E4E8C" fillOpacity={0.55} />

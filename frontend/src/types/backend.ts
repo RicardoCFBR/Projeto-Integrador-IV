@@ -9,9 +9,53 @@ export interface BackendPrediction {
   risk_policy_id: number | null;
   predicted_at: string;
   telemetry_until: string | null;
-  rul_cycles: number;
+  rul_cycles: string;
   risk_level: BackendRiskLevel;
   features: Record<string, unknown> | null;
+}
+
+export interface BackendDeviceOverview {
+  code: string;
+  latest_prediction: BackendPrediction | null;
+  last_telemetry_at: string | null;
+  estimated_capacity_pct: string | null;
+  cycle_count: string | null;
+}
+
+export interface BackendTelemetry {
+  recorded_at: string;
+  battery_temp_c: string;
+  estimated_capacity_pct: string | null;
+}
+
+export interface BackendModel {
+  id: number;
+  version: string;
+  algorithm: string;
+  hyperparameters: Record<string, string | number | boolean> | null;
+  metrics: {
+    mae_cycles: number;
+    rmse_cycles: number;
+    r2: number;
+    feature_importances: Record<string, number>;
+  } | null;
+}
+
+export interface BackendAlert {
+  device_code: string;
+  risk_level: BackendRiskLevel;
+  rul_cycles: string;
+  predicted_at: string;
+  telemetry_until: string | null;
+  policy_name: string | null;
+  policy_source: string | null;
+  high_below_cycles: string | null;
+  medium_below_cycles: string | null;
+}
+
+export interface BackendFleetTrendPoint {
+  day: string;
+  soh_percent: number;
 }
 
 /**

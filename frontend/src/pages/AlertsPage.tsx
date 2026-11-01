@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import MuiAlert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,8 +11,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { getAlerts } from '../services/api';
-import type { Alert, AlertSeverity, AlertStatus, AlertType } from '../types/alert';
+import { describeApiError, getAlerts } from '../services/api';
+import type { Alert, AlertSeverity, AlertType } from '../types/alert';
 
 const TYPE_LABELS: Record<AlertType, string> = {
   rul_low: 'RUL reduzido',
@@ -25,22 +26,21 @@ const SEVERITY_CONFIG: Record<AlertSeverity, { label: string; color: 'success' |
   high: { label: 'Alta', color: 'error' },
 };
 
-const STATUS_LABELS: Record<AlertStatus, string> = {
-  new: 'Novo',
-  viewed: 'Visualizado',
-  resolved: 'Resolvido',
-};
-
 export function AlertsPage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getAlerts().then((result) => {
-      setAlerts(result);
-      setIsLoading(false);
-    });
+    getAlerts()
+      .then(setAlerts)
+      .catch((requestError: unknown) => setError(describeApiError(requestError)))
+      .finally(() => setIsLoading(false));
   }, []);
+
+  if (error) {
+    return <MuiAlert severity="error">{error}</MuiAlert>;
+  }
 
   if (isLoading) {
     return (
@@ -55,7 +55,10 @@ export function AlertsPage() {
       <Box>
         <Typography variant="h5">Alertas</Typography>
         <Typography variant="body2" color="text.secondary">
-          {alerts.length.toLocaleString('pt-BR')} alertas gerados a partir de regras sobre os dados sintéticos.
+          {alerts.length.toLocaleString('pt-BR')} alertas gerados a partir da última predição de cada dispositivo.
+          Os limiares são experimentais: ordenam os dispositivos dentro da frota sintética e não foram validados com
+          a operação. RUL em ciclos não equivale a tempo restante, pois um dispositivo pouco usado gasta menos ciclos
+          por dia.
         </Typography>
       </Box>
 
@@ -68,8 +71,7 @@ export function AlertsPage() {
                 <TableCell>Gravidade</TableCell>
                 <TableCell>Dispositivo</TableCell>
                 <TableCell>Mensagem</TableCell>
-                <TableCell>Data</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell>Data da predição</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -86,9 +88,6 @@ export function AlertsPage() {
                   <TableCell sx={{ fontWeight: 600 }}>{alert.deviceId}</TableCell>
                   <TableCell sx={{ maxWidth: 320 }}>{alert.message}</TableCell>
                   <TableCell>{new Date(alert.createdAt).toLocaleString('pt-BR')}</TableCell>
-                  <TableCell>
-                    <Chip label={STATUS_LABELS[alert.status]} size="small" variant="outlined" />
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
