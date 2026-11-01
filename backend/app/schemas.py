@@ -31,7 +31,7 @@ class TelemetryReadingIn(ApiModel):
     battery_temp_c: Decimal = Field(ge=-40, le=120)
     voltage_mv: int = Field(gt=0)
     is_charging: bool
-    cycle_count: int = Field(ge=0)
+    cycle_count: Decimal = Field(ge=0)
     deep_discharge_count: int = Field(default=0, ge=0)
     estimated_capacity_pct: Decimal | None = Field(default=None, ge=0, le=100)
     ram_available_mb: int | None = Field(default=None, ge=0)
@@ -60,7 +60,7 @@ class TelemetryOut(ApiModel):
     battery_temp_c: Decimal
     voltage_mv: int
     is_charging: bool
-    cycle_count: int
+    cycle_count: Decimal
     deep_discharge_count: int
     estimated_capacity_pct: Decimal | None
     ram_available_mb: int | None
@@ -128,6 +128,29 @@ class PredictionOut(ApiModel):
 
 class DeviceDetailOut(DeviceOut):
     latest_prediction: PredictionOut | None
+
+
+class DeviceOverviewOut(DeviceDetailOut):
+    last_telemetry_at: datetime | None
+    estimated_capacity_pct: Decimal | None
+    cycle_count: Decimal | None
+
+
+class FleetTrendPointOut(ApiModel):
+    day: str
+    soh_percent: float
+
+
+class AlertOut(ApiModel):
+    device_code: str
+    risk_level: RiskLevel
+    rul_cycles: Decimal
+    predicted_at: datetime
+    telemetry_until: datetime | None
+    policy_name: str | None
+    policy_source: str | None
+    high_below_cycles: Decimal | None
+    medium_below_cycles: Decimal | None
 
 
 class RiskSummaryOut(ApiModel):

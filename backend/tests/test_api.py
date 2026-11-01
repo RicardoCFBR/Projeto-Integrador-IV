@@ -98,10 +98,22 @@ def test_model_name_and_version_are_unique(client):
     assert response.status_code == 409
 
 
+def test_ingest_accepts_fractional_cycle_count(client):
+    response = client.post("/telemetry", json={"readings": [reading(cycle_count=184.37)]})
+    assert response.status_code == 201, response.text
+    history = client.get("/devices/DEVICE-0001/telemetry").json()
+    assert float(history[0]["cycle_count"]) == 184.37
+
+
+def test_ingest_rejects_negative_cycle_count(client):
+    response = client.post("/telemetry", json={"readings": [reading(cycle_count=-0.5)]})
+    assert response.status_code == 422
+
+
 def test_prediction_is_classified_by_active_policy(client):
     client.post("/telemetry", json={"readings": [reading()]})
     model_id = _register_model(client)
-    expected = {"24": "high", "103": "medium", "284": "low"}
+    expected = {"700": "high", "900": "medium", "1200": "low"}
     for rul, level in expected.items():
         response = client.post(
             "/predictions",
@@ -154,9 +166,9 @@ def test_summary_uses_latest_prediction_per_device(client):
         )
         assert response.status_code == 201, response.text
 
-    predict("DEVICE-0001", "24")
-    predict("DEVICE-0001", "284")
-    predict("DEVICE-0002", "103")
+    predict("DEVICE-0001", "700")
+    predict("DEVICE-0001", "1200")
+    predict("DEVICE-0002", "900")
 
     summary = client.get("/predictions/summary").json()
     assert summary == {
@@ -170,10 +182,12 @@ def test_device_detail_includes_latest_prediction(client):
     client.post("/telemetry", json={"readings": [reading()]})
     model_id = _register_model(client)
     client.post(
-        "/predictions", json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "24"}
+        "/predictions",
+        json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "700"},
     )
     client.post(
-        "/predictions", json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "284"}
+        "/predictions",
+        json={"device_code": "DEVICE-0001", "model_id": model_id, "rul_cycles": "1200"},
     )
     detail = client.get("/devices/DEVICE-0001").json()
     assert detail["code"] == "DEVICE-0001"

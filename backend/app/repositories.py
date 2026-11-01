@@ -4,8 +4,8 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import and_, func, select
+from sqlalchemy.orm import Session, joinedload
 
 from app.models import BatteryPrediction, BatteryTelemetry, Device, MlModel, RiskPolicy
 from app.risk import RiskClassifier, RiskLevel
@@ -104,6 +104,48 @@ class TelemetryRepository:
         stmt = stmt.order_by(BatteryTelemetry.recorded_at.desc()).limit(limit)
         return list(self._session.scalars(stmt))
 
+    def history_for_device(
+        self, device: Device, until: datetime | None = None
+    ) -> list[BatteryTelemetry]:
+        stmt = select(BatteryTelemetry).where(BatteryTelemetry.device_id == device.id)
+        if until is not None:
+            stmt = stmt.where(BatteryTelemetry.recorded_at <= to_utc(until))
+        return list(self._session.scalars(stmt.order_by(BatteryTelemetry.recorded_at)))
+
+    def latest_by_device(self) -> dict[int, BatteryTelemetry]:
+        latest = (
+            select(
+                BatteryTelemetry.device_id,
+                func.max(BatteryTelemetry.recorded_at).label("recorded_at"),
+            )
+            .group_by(BatteryTelemetry.device_id)
+            .subquery()
+        )
+        stmt = select(BatteryTelemetry).join(
+            latest,
+            and_(
+                BatteryTelemetry.device_id == latest.c.device_id,
+                BatteryTelemetry.recorded_at == latest.c.recorded_at,
+            ),
+        )
+        return {row.device_id: row for row in self._session.scalars(stmt)}
+
+    def fleet_capacity_trend(self, days: int) -> list[tuple[str, float]]:
+        day = func.date(BatteryTelemetry.recorded_at)
+        reporting_devices = func.count(func.distinct(BatteryTelemetry.device_id))
+        fleet_size = self._session.scalar(select(reporting_devices)) or 0
+        stmt = (
+            select(day, func.avg(BatteryTelemetry.estimated_capacity_pct))
+            .where(BatteryTelemetry.estimated_capacity_pct.is_not(None))
+            .group_by(day)
+            # A day reported by a few devices would stand for the whole fleet in the average.
+            .having(reporting_devices * 2 >= fleet_size)
+            .order_by(day.desc())
+            .limit(days)
+        )
+        rows = self._session.execute(stmt).all()
+        return [(str(value), float(average)) for value, average in reversed(rows)]
+
 
 class ModelRepository:
     def __init__(self, session: Session) -> None:
@@ -128,6 +170,12 @@ class ModelRepository:
         self._session.add(model)
         self._session.flush()
         return model
+
+    def get_or_create(self, data: ModelIn) -> MlModel:
+        existing = self._session.scalar(
+            select(MlModel).where(MlModel.name == data.name, MlModel.version == data.version)
+        )
+        return existing if existing is not None else self.create(data)
 
     def list(self) -> list[MlModel]:
         return list(self._session.scalars(select(MlModel).order_by(MlModel.id)))
@@ -180,6 +228,17 @@ class PredictionRepository:
     def latest_for_device(self, device: Device) -> BatteryPrediction | None:
         rows = self.list_for_device(device, limit=1)
         return rows[0] if rows else None
+
+    def latest_by_device(self) -> dict[int, BatteryPrediction]:
+        latest_ids = select(func.max(BatteryPrediction.id)).group_by(BatteryPrediction.device_id)
+        stmt = (
+            select(BatteryPrediction)
+            .where(BatteryPrediction.id.in_(latest_ids))
+            .options(
+                joinedload(BatteryPrediction.device), joinedload(BatteryPrediction.risk_policy)
+            )
+        )
+        return {row.device_id: row for row in self._session.scalars(stmt)}
 
     def summary(self) -> RiskSummaryOut:
         latest_ids = select(func.max(BatteryPrediction.id)).group_by(BatteryPrediction.device_id)

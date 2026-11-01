@@ -15,16 +15,17 @@ class ThresholdSource(Protocol):
     medium_below_cycles: Decimal
 
 
-DEFAULT_HIGH_BELOW_CYCLES = Decimal("50")
-DEFAULT_MEDIUM_BELOW_CYCLES = Decimal("150")
+DEFAULT_HIGH_BELOW_CYCLES = Decimal("776")
+DEFAULT_MEDIUM_BELOW_CYCLES = Decimal("983")
 
 
 @dataclass(frozen=True)
 class RiskClassifier:
     """Maps an estimated remaining useful life, in charge cycles, to a risk band.
 
-    The default thresholds are experimental placeholders and must be replaced by the
-    values agreed with the fleet operator.
+    The default thresholds are the 10th and 33rd percentiles of the synthetic development
+    fleet. They rank devices within that fleet and must be replaced by the values agreed
+    with the fleet operator.
     """
 
     high_below_cycles: Decimal = DEFAULT_HIGH_BELOW_CYCLES
