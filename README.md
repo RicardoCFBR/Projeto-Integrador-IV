@@ -8,7 +8,7 @@ A proposta atual investiga o uso de **telemetria de dispositivos Android**, **pr
 
 O primeiro caso de uso priorizado é a **saúde da bateria**, com uma prova de conceito voltada à estimativa de degradação e vida útil restante (RUL — Remaining Useful Life).
 
-> **Status atual:** estrutura inicial do projeto em construção. Nesta etapa, o foco é validar o pipeline técnico e acadêmico com dados sintéticos parametrizados por referências técnicas e, quando possível, por padrões reais levantados com a comunidade externa.
+> **Status atual:** fluxo ponta a ponta funcionando com dados sintéticos: telemetria, API, banco, modelo, alertas e dashboard. Os resultados validam o pipeline técnico e não foram validados com dados reais. Veja [validação e limitações](docs/relatorios/validacao-e-limitacoes.md).
 
 ## Objetivo da PoC
 
@@ -26,14 +26,31 @@ API / persistência
 Dashboard web
 ```
 
-## Prioridade atual
+## Como rodar a demonstração
 
-- geração de dados sintéticos de telemetria;
-- primeiro modelo de bateria;
-- estrutura inicial de backend e banco;
-- estrutura inicial de frontend;
-- documentação da comunidade externa;
-- evidências para o Relatório Parcial.
+Em poucos passos, sem repetir o treinamento: o modelo final está versionado em `ml/artifacts/v2_2_tuned/`.
+
+```bash
+# Terminal 1
+cd backend
+uv venv --python 3.12 && source .venv/bin/activate
+uv pip install -e ".[dev]"
+cp .env.example .env
+docker compose up -d
+uvicorn app.main:app
+
+# Terminal 2, depois de o banco e a API subirem
+cd backend && source .venv/bin/activate
+python scripts/run_demo_pipeline.py
+
+# Terminal 3
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+O roteiro completo, com o passo a passo do vídeo, está em [demonstração](docs/relatorios/demonstracao.md).
 
 ## Roadmap posterior
 
@@ -98,14 +115,14 @@ Dashboard web
 | Organização do repositório | Estruturada |
 | Dados sintéticos | Implementados e validados para a PoC |
 | Engenharia de atributos | Implementada |
-| Modelo de bateria | Random Forest V2.2 treinado e avaliado, com comparação por métricas de regressão |
-| Backend | API FastAPI implementada para ingestão e consulta de telemetria, registro de modelos e persistência de predições; 35 testes automatizados |
-| Banco | PostgreSQL estruturado para dispositivos, histórico de telemetria, versões de modelos, políticas de risco e predições, com distinção entre dados sintéticos e reais |
-| Inferência automática | Pendente: a infraestrutura está preparada para registrar os resultados, mas a execução automática do modelo a partir da telemetria ainda não foi integrada ao backend |
-| Frontend | Estrutura e telas implementadas; integração com o backend ainda em evolução |
-| Integração com telemetria real | Pendente, dependente da disponibilização e do alinhamento dos dados da organização parceira |
-| Validação com dados reais | Pendente |
-| Relatório Parcial | Em andamento |
+| Modelo de bateria | Random Forest V2.2 ajustado, treinado, avaliado e versionado |
+| Backend | API FastAPI com ingestão, consulta, inferência sob demanda e alertas; 70 testes automatizados |
+| Banco | PostgreSQL com dispositivos, histórico de telemetria, versões de modelos, políticas de risco e predições, com distinção entre dados sintéticos e reais |
+| Inferência | Sob demanda: `POST /devices/{code}/predictions/run` calcula as 17 features do histórico gravado, executa o modelo e grava a predição. Não é processamento contínuo |
+| Frontend | Telas conectadas à API; modo de demonstração com mocks por `VITE_USE_MOCKS=true` |
+| Alertas preventivos | Implementados com limiares experimentais, relativos à frota sintética |
+| Integração com telemetria real | Não realizada, dependente da disponibilização dos dados da organização parceira |
+| Validação com dados reais | Não realizada |
 
 ## Critério de sucesso da solução inicial
 
