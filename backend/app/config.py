@@ -9,7 +9,7 @@ RUL_MODEL_DIR = Path(__file__).resolve().parents[2] / "ml" / "artifacts" / "v2_2
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "Fleet Battery Health API"
+    app_name: str = "BatteryCare API"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/fleet_battery"
     ingest_batch_max: int = 5000
     frontend_origins: str = "http://localhost:5173,http://127.0.0.1:5173"

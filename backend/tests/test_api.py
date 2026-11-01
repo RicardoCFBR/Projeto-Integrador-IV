@@ -29,6 +29,10 @@ def test_health(client):
     assert response.json() == {"status": "ok"}
 
 
+def test_api_documentation_uses_the_product_name(client):
+    assert client.get("/openapi.json").json()["info"]["title"] == "BatteryCare API"
+
+
 def test_ingest_creates_device_and_reading(client):
     response = client.post("/telemetry", json={"readings": [reading()]})
     assert response.status_code == 201, response.text

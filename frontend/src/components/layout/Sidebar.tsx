@@ -50,7 +50,7 @@ export function Sidebar() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2.5, py: 2.5 }}>
         <BatteryChargingFullOutlinedIcon sx={{ color: SIDEBAR_TEXT_ACTIVE }} />
         <Typography variant="subtitle1" sx={{ color: SIDEBAR_TEXT_ACTIVE, fontWeight: 700, lineHeight: 1.2 }}>
-          Battery Health
+          BatteryCare
           <Typography component="span" variant="caption" sx={{ display: 'block', color: SIDEBAR_TEXT }}>
             Monitoramento preditivo
           </Typography>
