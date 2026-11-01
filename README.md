@@ -95,13 +95,16 @@ Dashboard web
 
 | Área | Estado |
 |---|---|
-| Organização do repositório | Em andamento |
-| Dados sintéticos | Pendente |
-| Modelo inicial de bateria | Pendente |
-| Backend | Solução inicial: API FastAPI com ingestão, consulta e predições, 35 testes |
-| Banco | Solução inicial: schema PostgreSQL versionado em `backend/db/schema.sql` |
-| Frontend | Pendente |
-| Validação com comunidade externa | Pendente |
+| Organização do repositório | Estruturada |
+| Dados sintéticos | Implementados e validados para a PoC |
+| Engenharia de atributos | Implementada |
+| Modelo de bateria | Random Forest V2.2 treinado e avaliado, com comparação por métricas de regressão |
+| Backend | API FastAPI implementada para ingestão e consulta de telemetria, registro de modelos e persistência de predições; 35 testes automatizados |
+| Banco | PostgreSQL estruturado para dispositivos, histórico de telemetria, versões de modelos, políticas de risco e predições, com distinção entre dados sintéticos e reais |
+| Inferência automática | Pendente: a infraestrutura está preparada para registrar os resultados, mas a execução automática do modelo a partir da telemetria ainda não foi integrada ao backend |
+| Frontend | Estrutura e telas implementadas; integração com o backend ainda em evolução |
+| Integração com telemetria real | Pendente, dependente da disponibilização e do alinhamento dos dados da organização parceira |
+| Validação com dados reais | Pendente |
 | Relatório Parcial | Em andamento |
 
 ## Critério de sucesso da solução inicial
