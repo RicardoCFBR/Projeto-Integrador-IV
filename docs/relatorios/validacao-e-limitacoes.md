@@ -12,7 +12,7 @@ Os resultados quantitativos são evidência da viabilidade técnica do pipeline.
 
 | Item | Como foi verificado | Resultado |
 |---|---|---|
-| Backend | `pytest`, `ruff` e `bandit`, Python 3.12 | 70 testes passando, sem achados |
+| Backend | `pytest`, `ruff` e `bandit`, Python 3.12 | 71 testes passando, sem achados |
 | Fluxo completo | `run_demo_pipeline.py` do banco vazio, PostgreSQL 16.15 | 14.400 leituras, predições em 80 aparelhos, 58 s |
 | Paridade das features | Comparação com a saída do pipeline de ML em 400 aparelhos | 13 de 17 idênticas; 4 de ciclos diários com desvio máximo de 0,006 |
 | Reprodutibilidade do modelo | Pipeline executado a partir do código, semente 42 | MAE 126,84, RMSE 156,45 e R² 0,578, iguais aos registrados |

@@ -157,7 +157,7 @@ Nível 3 em 2026-09-27: `pytest` com 35 testes passando e `db/schema.sql` aplica
 container `postgres:16-alpine` (PostgreSQL 16.15), com paridade de colunas entre DDL e ORM e
 constraints de unicidade e CHECK comprovadas por inserções rejeitadas.
 
-Nível 3 em 2026-11-01, Python 3.12: `pytest` com 70 testes passando; `ruff` e `bandit` sem achados;
+Nível 3 em 2026-11-01, Python 3.12: `pytest` com 71 testes passando; `ruff` e `bandit` sem achados;
 `scripts/run_demo_pipeline.py` executado do banco vazio até as predições em `postgres:16-alpine`
 (PostgreSQL 16.15), com a tela da aplicação lendo os dados da API.
 

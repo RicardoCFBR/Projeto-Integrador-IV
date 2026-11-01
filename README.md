@@ -4,6 +4,8 @@ Projeto acadêmico desenvolvido para a disciplina **Projeto Integrador em Comput
 
 ## Visão geral
 
+O sistema desenvolvido chama-se **BatteryCare**.
+
 A proposta atual investiga o uso de **telemetria de dispositivos Android**, **processamento de dados em escala**, **aprendizado de máquina** e **visualização web** para apoiar a identificação preventiva de problemas em frotas de smartphones corporativos.
 
 O primeiro caso de uso priorizado é a **saúde da bateria**, com uma prova de conceito voltada à estimativa de degradação e vida útil restante (RUL — Remaining Useful Life).
@@ -116,7 +118,7 @@ O roteiro completo, com o passo a passo do vídeo, está em [demonstração](doc
 | Dados sintéticos | Implementados e validados para a PoC |
 | Engenharia de atributos | Implementada |
 | Modelo de bateria | Random Forest V2.2 ajustado, treinado, avaliado e versionado |
-| Backend | API FastAPI com ingestão, consulta, inferência sob demanda e alertas; 70 testes automatizados |
+| Backend | API FastAPI com ingestão, consulta, inferência sob demanda e alertas; 71 testes automatizados |
 | Banco | PostgreSQL com dispositivos, histórico de telemetria, versões de modelos, políticas de risco e predições, com distinção entre dados sintéticos e reais |
 | Inferência | Sob demanda: `POST /devices/{code}/predictions/run` calcula as 17 features do histórico gravado, executa o modelo e grava a predição. Não é processamento contínuo |
 | Frontend | Telas conectadas à API; modo de demonstração com mocks por `VITE_USE_MOCKS=true` |
