@@ -20,6 +20,16 @@ class Settings(BaseSettings):
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.frontend_origins.split(",") if origin.strip()]
 
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        """Render provides a standard postgresql:// URL; use the installed psycopg driver."""
+        url = self.database_url
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+psycopg://", 1)
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+psycopg://", 1)
+        return url
+
 
 @lru_cache
 def get_settings() -> Settings:
