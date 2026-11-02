@@ -63,3 +63,11 @@ A carga inicial é feita uma única vez; repetir o script não substitui dados.
 - Como o frontend incorpora `VITE_API_URL` no momento do build, qualquer
   mudança de endereço da API requer novo build do site estático.
 - Nunca executar `docker compose down -v` em banco com dados a preservar.
+
+## Modo público protegido
+
+Quando `READ_ONLY_DEMO=true` no backend, somente métodos GET, HEAD e OPTIONS são aceitos. Os métodos POST, PUT, PATCH e DELETE retornam HTTP 403; isso inclui a rota antiga de persistência de inferência, ingestão de telemetria e cadastro de modelos. O professor pode usar `GET /devices/{code}/predictions/preview` para executar o Random Forest sobre dados existentes sem persistir nada. O frontend publicado deve ter `VITE_READ_ONLY_DEMO=true` (variável de build) e apresenta uma mensagem específica de prévia calculada.
+
+**Importante:** a API precisa ser populada antes de ativar o bloqueio de escrita. O conjunto sintético já foi carregado no PostgreSQL online. Para futuras cargas autorizadas, configurar temporariamente o acesso administrativo via fluxo separado e não publicar rotas de escrita sem autenticação.
+
+O endpoint de prévia é público e pode consumir CPU; não é proteção completa contra abuso ou excesso de requisições. O ideal em uma versão operacional é acrescentar autenticação e rate limiting na borda.
