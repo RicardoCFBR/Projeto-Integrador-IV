@@ -1,11 +1,12 @@
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, FastAPI, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
@@ -18,9 +19,10 @@ from app.repositories import (
     ModelRepository,
     NotFoundError,
     PredictionRepository,
+    RiskPolicyRepository,
     TelemetryRepository,
 )
-from app.risk import RiskLevel
+from app.risk import RiskClassifier, RiskLevel
 from app.schemas import (
     AlertOut,
     DeviceDetailOut,
@@ -33,6 +35,7 @@ from app.schemas import (
     ModelOut,
     PredictionIn,
     PredictionOut,
+    PredictionPreviewOut,
     RiskSummaryOut,
     TelemetryBatchIn,
     TelemetryOut,
@@ -160,6 +163,29 @@ def run_prediction(
     return PredictionOut.model_validate(prediction)
 
 
+@router.get("/devices/{code}/predictions/preview", response_model=PredictionPreviewOut)
+def preview_prediction(
+    code: str,
+    db: SessionDep,
+    predictor: PredictorDep,
+) -> PredictionPreviewOut:
+    """Run real inference against existing telemetry without writing to PostgreSQL."""
+    device = DeviceRepository(db).require(code)
+    snapshot = build_features(TelemetryRepository(db).history_for_device(device))
+    rul = Decimal(str(round(predictor.predict(snapshot.values), 2)))
+    policy = RiskPolicyRepository(db).get_active()
+    classifier = RiskClassifier.from_policy(policy) if policy else RiskClassifier()
+    return PredictionPreviewOut(
+        device_code=code,
+        predicted_at=datetime.now(UTC),
+        telemetry_until=snapshot.telemetry_until,
+        rul_cycles=rul,
+        risk_level=classifier.classify(rul),
+        model_version=predictor.registration.version,
+        persisted=False,
+    )
+
+
 @router.get("/devices/{code}/predictions", response_model=list[PredictionOut])
 def list_predictions(
     code: str,
@@ -235,9 +261,23 @@ def _model_unavailable(_: Request, exc: Exception) -> JSONResponse:
     )
 
 
+class ReadOnlyDemoMiddleware(BaseHTTPMiddleware):
+    """Protect public demos from HTTP writes, independent of frontend behavior."""
+
+    async def dispatch(self, request: Request, call_next):
+        if request.method not in {"GET", "HEAD", "OPTIONS"}:
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Modo demonstracao: operacoes de escrita bloqueadas."},
+            )
+        return await call_next(request)
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, version="0.1.0")
+    if settings.read_only_demo:
+        app.add_middleware(ReadOnlyDemoMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
