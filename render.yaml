@@ -6,7 +6,7 @@ services:
     runtime: python
     plan: free
     branch: main
-    region: oregon
+    region: virginia
     buildCommand: pip install -e ./backend
     startCommand: cd backend && python -m app.render_bootstrap && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
@@ -15,6 +15,8 @@ services:
         value: 3.12.5
       - key: WEB_CONCURRENCY
         value: "1"
+      - key: READ_ONLY_DEMO
+        value: "true"
       - key: DATABASE_URL
         fromDatabase:
           name: batterycare-postgres-pi4
@@ -41,6 +43,8 @@ services:
           envVarKey: RENDER_EXTERNAL_URL
       - key: VITE_USE_MOCKS
         value: "false"
+      - key: VITE_READ_ONLY_DEMO
+        value: "true"
     routes:
       - type: rewrite
         source: /*
@@ -51,5 +55,5 @@ databases:
     plan: free
     region: oregon
     postgresMajorVersion: "16"
-    databaseName: fleet_battery
-    user: fleet_user
+    databaseName: batterycare_postgres_pi4
+    user: batterycare_postgres_pi4_user
