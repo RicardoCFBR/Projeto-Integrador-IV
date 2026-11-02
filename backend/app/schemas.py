@@ -126,6 +126,16 @@ class PredictionOut(ApiModel):
     features: dict[str, Any] | None
 
 
+class PredictionPreviewOut(ApiModel):
+    device_code: str
+    predicted_at: datetime
+    telemetry_until: datetime
+    rul_cycles: Decimal
+    risk_level: RiskLevel
+    model_version: str
+    persisted: Literal[False] = False
+
+
 class DeviceDetailOut(DeviceOut):
     latest_prediction: PredictionOut | None
 

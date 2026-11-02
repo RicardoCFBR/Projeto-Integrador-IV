@@ -88,11 +88,15 @@ export function DeviceDetailPage() {
     setRunFeedback(null);
     try {
       const prediction = await runPrediction(id);
-      invalidateDevices();
-      setData(await fetchDeviceData(id));
+      if (import.meta.env.VITE_READ_ONLY_DEMO !== 'true') {
+        invalidateDevices();
+        setData(await fetchDeviceData(id));
+      }
       setRunFeedback({
         severity: 'success',
-        message: `Predição registrada com o modelo ${prediction.modelVersion}: ${prediction.predictedRulCycles.toLocaleString('pt-BR')} ciclos.`,
+        message: import.meta.env.VITE_READ_ONLY_DEMO === 'true'
+          ? `Prévia calculada pelo modelo ${prediction.modelVersion}: ${prediction.predictedRulCycles.toLocaleString('pt-BR')} ciclos. Nenhum dado foi alterado.`
+          : `Predição registrada com o modelo ${prediction.modelVersion}: ${prediction.predictedRulCycles.toLocaleString('pt-BR')} ciclos.`,
       });
     } catch (requestError) {
       setRunFeedback({ severity: 'warning', message: describeApiError(requestError) });

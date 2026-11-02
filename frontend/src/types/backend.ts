@@ -14,6 +14,16 @@ export interface BackendPrediction {
   features: Record<string, unknown> | null;
 }
 
+export interface BackendPredictionPreview {
+  device_code: string;
+  predicted_at: string;
+  telemetry_until: string;
+  rul_cycles: string;
+  risk_level: BackendRiskLevel;
+  model_version: string;
+  persisted: false;
+}
+
 export interface BackendDeviceOverview {
   code: string;
   latest_prediction: BackendPrediction | null;
