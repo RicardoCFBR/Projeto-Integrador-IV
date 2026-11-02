@@ -1,20 +1,19 @@
 """Cloud demo: real prediction previews, no database writes."""
 from datetime import UTC, datetime, timedelta
 
-from app.config import get_settings
 from app.inference import get_predictor
 from app.main import create_app
 from tests.conftest import reading
 from tests.test_inference import FakePredictor
 
 
-def test_public_demo_blocks_every_write_method(client):
-    app = client.app
-    # The production switch registers middleware at app creation.
-    # Use the actual test client on a fresh app with its own configured middleware.
+def test_public_demo_blocks_every_write_method():
+    from fastapi.testclient import TestClient
     from app.main import ReadOnlyDemoMiddleware
+    app = create_app()
     app.add_middleware(ReadOnlyDemoMiddleware)
-    for method, route in (
+    with TestClient(app) as client:
+        for method, route in (
         ("POST", "/telemetry"),
         ("POST", "/models"),
         ("POST", "/predictions"),
@@ -22,9 +21,9 @@ def test_public_demo_blocks_every_write_method(client):
         ("PUT", "/telemetry"),
         ("PATCH", "/telemetry"),
         ("DELETE", "/telemetry"),
-    ):
-        response = client.request(method, route)
-        assert response.status_code == 403, (method, route, response.text)
+        ):
+            response = client.request(method, route)
+            assert response.status_code == 403, (method, route, response.text)
 
 
 def test_preview_does_not_persist_prediction(client):
