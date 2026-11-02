@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,7 +10,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { ChartCard } from '../components/cards/ChartCard';
 import { PredictionCard } from '../components/cards/PredictionCard';
 import { FeatureImportanceChart } from '../components/charts/FeatureImportanceChart';
-import { getModelInfo } from '../services/api';
+import { describeApiError, getModelInfo } from '../services/api';
 import type { ModelInfo } from '../types/prediction';
 
 const PIPELINE_STEPS = [
@@ -23,10 +24,17 @@ const PIPELINE_STEPS = [
 
 export function MachineLearningPage() {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getModelInfo().then(setModelInfo);
+    getModelInfo()
+      .then(setModelInfo)
+      .catch((requestError: unknown) => setError(describeApiError(requestError)));
   }, []);
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   if (!modelInfo) {
     return (

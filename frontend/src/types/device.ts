@@ -26,5 +26,10 @@ export interface DeviceTelemetryPoint {
   date: string;
   sohPercent: number;
   temperatureMeanC: number;
+  predictedRulCycles?: number;
+}
+
+export interface RulHistoryPoint {
+  date: string;
   predictedRulCycles: number;
 }

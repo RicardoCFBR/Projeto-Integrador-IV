@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,39 +15,46 @@ import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper';
 import { PredictionCard } from '../components/cards/PredictionCard';
 import { DeviceStatusChip } from '../components/devices/DeviceStatusChip';
-import { matchesRulRange, type RulRangeFilter } from '../stores/deviceStore';
-import { getModelInfo, getPredictions } from '../services/api';
+import type { StatusFilter } from '../stores/deviceStore';
+import { describeApiError, getModelInfo, getPredictions } from '../services/api';
 import type { ModelInfo, Prediction } from '../types/prediction';
 
-const RUL_FILTERS: { value: RulRangeFilter; label: string }[] = [
+const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Todas' },
-  { value: 'low', label: 'RUL baixo' },
-  { value: 'medium', label: 'RUL intermediário' },
-  { value: 'high', label: 'RUL alto' },
+  { value: 'risk', label: 'Risco' },
+  { value: 'attention', label: 'Atenção' },
+  { value: 'healthy', label: 'Saudável' },
 ];
 
 export function PredictionsPage() {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [rulFilter, setRulFilter] = useState<RulRangeFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([getModelInfo(), getPredictions()]).then(([modelInfoResult, predictionsResult]) => {
-      setModelInfo(modelInfoResult);
-      setPredictions(predictionsResult);
-      setIsLoading(false);
-    });
+    Promise.all([getModelInfo(), getPredictions()])
+      .then(([modelInfoResult, predictionsResult]) => {
+        setModelInfo(modelInfoResult);
+        setPredictions(predictionsResult);
+      })
+      .catch((requestError: unknown) => setError(describeApiError(requestError)))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const filteredPredictions = useMemo(
-    () => predictions.filter((prediction) => matchesRulRange(prediction.predictedRulCycles, rulFilter)),
-    [predictions, rulFilter],
+    () => predictions.filter((prediction) => statusFilter === 'all' || prediction.status === statusFilter),
+    [predictions, statusFilter],
   );
 
   const paginatedPredictions = filteredPredictions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   if (isLoading || !modelInfo) {
     return (
@@ -63,17 +71,17 @@ export function PredictionsPage() {
       <PredictionCard modelInfo={modelInfo} />
 
       <ToggleButtonGroup
-        value={rulFilter}
+        value={statusFilter}
         exclusive
         size="small"
-        onChange={(_, value: RulRangeFilter | null) => {
+        onChange={(_, value: StatusFilter | null) => {
           if (value) {
-            setRulFilter(value);
+            setStatusFilter(value);
             setPage(0);
           }
         }}
       >
-        {RUL_FILTERS.map((filter) => (
+        {STATUS_FILTERS.map((filter) => (
           <ToggleButton key={filter.value} value={filter.value}>
             {filter.label}
           </ToggleButton>

@@ -15,7 +15,13 @@ import { HealthDistributionChart } from '../components/charts/HealthDistribution
 import { RulDistributionChart } from '../components/charts/RulDistributionChart';
 import { SohTrendChart } from '../components/charts/SohTrendChart';
 import { TemperatureRulChart } from '../components/charts/TemperatureRulChart';
-import { getDashboardSummary, getDevices, getFleetSohTrend, type DashboardSummary } from '../services/api';
+import {
+  describeApiError,
+  getDashboardSummary,
+  getDevices,
+  getFleetSohTrend,
+  type DashboardSummary,
+} from '../services/api';
 import type { Device } from '../types/device';
 
 export function DashboardPage() {
@@ -24,24 +30,33 @@ export function DashboardPage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [sohTrend, setSohTrend] = useState<{ date: string; value: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    Promise.all([getDashboardSummary(), getDevices(), getFleetSohTrend()]).then(
-      ([summaryResult, devicesResult, trendResult]) => {
+    Promise.all([getDashboardSummary(), getDevices(), getFleetSohTrend()])
+      .then(([summaryResult, devicesResult, trendResult]) => {
         if (!isMounted) return;
         setSummary(summaryResult);
         setDevices(devicesResult);
         setSohTrend(trendResult.map((point) => ({ date: point.date, value: point.sohPercent })));
         setIsLoading(false);
-      },
-    );
+      })
+      .catch((requestError: unknown) => {
+        if (!isMounted) return;
+        setError(describeApiError(requestError));
+        setIsLoading(false);
+      });
 
     return () => {
       isMounted = false;
     };
   }, []);
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   if (isLoading || !summary) {
     return (
@@ -56,6 +71,12 @@ export function DashboardPage() {
       <Alert severity="info" variant="outlined">
         Ambiente demonstrativo — dados sintéticos utilizados para validação da prova de conceito.
       </Alert>
+
+      {summary.totalDevices === 0 ? (
+        <Alert severity="warning">
+          Nenhuma predição no banco. Execute o comando de demonstração do backend para popular a frota.
+        </Alert>
+      ) : null}
 
       <Box
         sx={{
@@ -118,7 +139,7 @@ export function DashboardPage() {
         <ChartCard title="Distribuição do RUL previsto" subtitle="Faixas de ciclos restantes por dispositivo">
           <RulDistributionChart devices={devices} />
         </ChartCard>
-        <ChartCard title="Evolução média do SoH" subtitle="Últimos 30 dias — média da frota">
+        <ChartCard title="Evolução média do SoH" subtitle="Últimos 30 dias de telemetria, média da frota">
           <SohTrendChart data={sohTrend} label="SoH" unit="%" color={theme.palette.primary.main} />
         </ChartCard>
         <ChartCard title="Temperatura × RUL" subtitle="Temperatura média (30d) vs. RUL previsto">

@@ -140,10 +140,10 @@ com `.env.example` como modelo).
 
 ### 11. Limitações declaradas
 
-Só é afirmado o que pode ser demonstrado. Os limiares de risco (50 e 150 ciclos) estão gravados
+Só é afirmado o que pode ser demonstrado. Os limiares de risco (hoje 776 e 983 ciclos) estão gravados
 como `experimental` e descritos como provisórios; os dados são sintéticos e a coluna `source` diz
-isso em cada linha; a inferência ainda não roda dentro da API. Tudo está escrito no pull request 1
-e no README do backend.
+isso em cada linha. A integração entre modelo, API e frontend veio depois do pull request 1, e o que
+foi validado, com seus limites, está em `validacao-e-limitacoes.md`.
 
 ### 12. Versionamento e publicação
 

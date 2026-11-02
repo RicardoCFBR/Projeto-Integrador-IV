@@ -56,7 +56,7 @@ código e o aparelho físico fica fora deste banco.
 | battery_temp_c | NUMERIC(5,2) | sim | graus Celsius |
 | voltage_mv | INTEGER | sim | maior que zero |
 | is_charging | BOOLEAN | sim | |
-| cycle_count | INTEGER | sim | maior ou igual a zero |
+| cycle_count | NUMERIC(10,2) | sim | maior ou igual a zero; fracionário, como no conjunto de dados de treino |
 | estimated_capacity_pct | NUMERIC(5,2) | não | 0 a 100 |
 | ram_available_mb | INTEGER | não | maior ou igual a zero |
 | network_rx_mb, network_tx_mb | NUMERIC(12,3) | não | maior ou igual a zero |
@@ -87,15 +87,17 @@ para que dado sintético nunca seja confundido com dado real.
 | Campo | Tipo | Obrigatório | Regra |
 |---|---|---|---|
 | id | SERIAL | sim | |
-| name | VARCHAR(80) | sim, único | ex.: `experimental-v1` |
+| name | VARCHAR(80) | sim, único | ex.: `experimental-v2` |
 | high_below_cycles | NUMERIC(8,2) | sim | RUL abaixo disso é `high` |
 | medium_below_cycles | NUMERIC(8,2) | sim | maior que o anterior; RUL abaixo disso é `medium` |
 | source | VARCHAR(20) | sim | `experimental`, `community` ou `literature` |
 | is_active | BOOLEAN | sim | no máximo uma linha ativa |
 | notes | TEXT | não | |
 
-A DDL semeia a política `experimental-v1` com 50 e 150 ciclos. São valores provisórios para a
-prova de conceito, não validados com a operação. Devem ser substituídos pelos limiares
+A DDL semeia a política `experimental-v2` com 776 e 983 ciclos, os percentis 10 e 33 do RUL dos
+aparelhos de desenvolvimento. A primeira versão usava 50 e 150 ciclos, valores que o modelo nunca
+atinge, porque o menor RUL do conjunto de dados é 497. Os limiares atuais são provisórios e ordenam
+os aparelhos dentro da frota sintética, sem validação com a operação. Devem ser substituídos pelos limiares
 levantados com a comunidade externa, gravando a nova política com `source = 'community'`.
 
 ## battery_prediction

@@ -26,7 +26,7 @@ const SECTIONS: { title: string; body: string }[] = [
   },
   {
     title: 'Próxima evolução',
-    body: 'As próximas etapas incluem a integração com telemetria real de dispositivos, validação operacional dos resultados e evolução do backend e da API que hoje são simulados pela camada de mocks do frontend.',
+    body: 'As próximas etapas incluem a integração com telemetria real de dispositivos, um novo treinamento do modelo com esses dados e a validação operacional dos resultados.',
   },
 ];
 

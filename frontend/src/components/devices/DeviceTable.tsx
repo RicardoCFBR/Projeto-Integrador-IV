@@ -30,15 +30,8 @@ const COLUMNS: { key: SortableColumn; label: string }[] = [
   { key: 'cycleCount', label: 'Ciclos' },
 ];
 
-function formatRelativeTime(iso: string): string {
-  const date = new Date(iso);
-  const diffMinutes = Math.round((Date.now() - date.getTime()) / 60_000);
-
-  if (diffMinutes < 60) return `Há ${diffMinutes} min`;
-  const diffHours = Math.round(diffMinutes / 60);
-  if (diffHours < 24) return `Hoje ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-  const diffDays = Math.round(diffHours / 24);
-  return `Há ${diffDays} dia${diffDays > 1 ? 's' : ''}`;
+function formatTelemetryDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 }
 
 export function DeviceTable({ devices }: DeviceTableProps) {
@@ -105,7 +98,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                   <DeviceStatusChip status={device.status} />
                 </TableCell>
                 <TableCell>{device.deepDischargeEvents30d}</TableCell>
-                <TableCell>{formatRelativeTime(device.lastTelemetryAt)}</TableCell>
+                <TableCell>{formatTelemetryDate(device.lastTelemetryAt)}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="Visualizar detalhes">
                     <IconButton component={RouterLink} to={`/devices/${device.id}`} size="small">

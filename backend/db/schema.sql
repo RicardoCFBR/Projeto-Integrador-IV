@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS battery_telemetry (
     battery_temp_c         NUMERIC(5, 2) NOT NULL,
     voltage_mv             INTEGER       NOT NULL,
     is_charging            BOOLEAN       NOT NULL,
-    cycle_count            INTEGER       NOT NULL,
+    cycle_count            NUMERIC(10, 2) NOT NULL,
     deep_discharge_count    INTEGER       NOT NULL DEFAULT 0,
     estimated_capacity_pct NUMERIC(5, 2),
     ram_available_mb       INTEGER,
@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS battery_prediction (
 CREATE INDEX IF NOT EXISTS ix_battery_prediction_device_predicted_desc
     ON battery_prediction (device_id, predicted_at DESC);
 
--- Placeholder thresholds. Replace after the interview with the fleet operator.
+-- Reproduced by ml/evaluation/calibrate_risk_policy.py. Replace with values agreed with the operator.
 INSERT INTO risk_policy (name, high_below_cycles, medium_below_cycles, source, is_active, notes)
-VALUES ('experimental-v1', 50, 150, 'experimental', TRUE,
-        'Placeholder thresholds for the proof of concept; not validated with the operator.')
+VALUES ('experimental-v2', 776, 983, 'experimental', TRUE,
+        'Percentiles 10 and 33 of the RUL of the synthetic development fleet. Ranks devices within that fleet; not validated with the operator.')
 ON CONFLICT (name) DO NOTHING;
