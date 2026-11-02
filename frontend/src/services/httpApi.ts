@@ -6,6 +6,7 @@ import {
   type BackendFleetTrendPoint,
   type BackendModel,
   type BackendPrediction,
+  type BackendPredictionPreview,
   type BackendTelemetry,
 } from '../types/backend';
 import type { Device, DeviceTelemetryPoint, RulHistoryPoint } from '../types/device';
@@ -182,6 +183,18 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 }
 
 export async function runPrediction(id: string): Promise<Prediction> {
+  if (import.meta.env.VITE_READ_ONLY_DEMO === 'true') {
+    const preview = await request<BackendPredictionPreview>(
+      `/devices/${encodeURIComponent(id)}/predictions/preview`,
+    );
+    return {
+      deviceId: preview.device_code,
+      predictedRulCycles: Math.round(Number(preview.rul_cycles)),
+      status: mapRiskLevelToDeviceStatus(preview.risk_level),
+      predictedAt: preview.predicted_at,
+      modelVersion: preview.model_version,
+    };
+  }
   const prediction = await request<BackendPrediction>(`/devices/${encodeURIComponent(id)}/predictions/run`, {
     method: 'POST',
   });
