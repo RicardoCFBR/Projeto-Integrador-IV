@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     app_name: str = "BatteryCare API"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/fleet_battery"
     ingest_batch_max: int = 5000
+    read_only_demo: bool = False
     frontend_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     rul_model_path: Path = RUL_MODEL_DIR / "battery_rul_random_forest_v2_2_tuned.joblib"
     rul_metadata_path: Path = RUL_MODEL_DIR / "battery_rul_random_forest_v2_2_tuned_metadata.json"
