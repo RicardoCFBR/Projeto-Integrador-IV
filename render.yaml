@@ -23,7 +23,7 @@ services:
         fromService:
           name: batterycare-web-pi4
           type: web
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+          envVarKey: RENDER_EXTERNAL_URL
 
   - type: web
     name: batterycare-web-pi4
@@ -38,7 +38,7 @@ services:
         fromService:
           name: batterycare-api-pi4
           type: web
-          envVarKey: RENDER_EXTERNAL_HOSTNAME
+          envVarKey: RENDER_EXTERNAL_URL
       - key: VITE_USE_MOCKS
         value: "false"
     routes:
