@@ -104,6 +104,24 @@ class TelemetryRepository:
         stmt = stmt.order_by(BatteryTelemetry.recorded_at.desc()).limit(limit)
         return list(self._session.scalars(stmt))
 
+    def list_for_feature_engineering(
+        self,
+        device: Device,
+        limit: int = 1000,
+    ) -> list[BatteryTelemetry]:
+
+        stmt = (
+            select(BatteryTelemetry)
+            .where(BatteryTelemetry.device_id == device.id)
+            .order_by(BatteryTelemetry.recorded_at.desc())
+            .limit(limit)
+        )
+
+        readings = list(self._session.scalars(stmt))
+        readings.reverse()
+
+        return readings
+
 
 class ModelRepository:
     def __init__(self, session: Session) -> None:

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS battery_telemetry (
     battery_temp_c         NUMERIC(5, 2) NOT NULL,
     voltage_mv             INTEGER       NOT NULL,
     is_charging            BOOLEAN       NOT NULL,
-    cycle_count            INTEGER       NOT NULL,
+    cycle_count            NUMERIC(10, 2)        NOT NULL,
     deep_discharge_count    INTEGER       NOT NULL DEFAULT 0,
     estimated_capacity_pct NUMERIC(5, 2),
     ram_available_mb       INTEGER,

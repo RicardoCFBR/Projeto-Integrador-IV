@@ -114,7 +114,7 @@ class BatteryTelemetry(Base):
     battery_temp_c: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False)
     voltage_mv: Mapped[int] = mapped_column(Integer, nullable=False)
     is_charging: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    cycle_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    cycle_count: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     deep_discharge_count: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
     )

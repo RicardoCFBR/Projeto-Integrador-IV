@@ -150,3 +150,31 @@ def test_only_one_risk_policy_can_be_active(session):
     )
     with pytest.raises(IntegrityError):
         session.commit()
+
+
+
+def test_feature_engineering_history_is_chronological(session):
+    device = Device(code="DEVICE-0001")
+    session.add(device)
+    session.flush()
+
+    repo = TelemetryRepository(session)
+
+    readings = [
+        TelemetryReadingIn(**reading("DEVICE-0001", "2026-09-20T10:00:00Z")),
+        TelemetryReadingIn(**reading("DEVICE-0001", "2026-09-20T10:15:00Z")),
+        TelemetryReadingIn(**reading("DEVICE-0001", "2026-09-20T10:30:00Z")),
+    ]
+
+    repo.bulk_insert(readings)
+    session.commit()
+
+    history = repo.list_for_feature_engineering(device, limit=2)
+
+    assert len(history) == 2
+
+    assert history[0].recorded_at.isoformat().startswith("2026-09-20T10:15:00")
+    assert history[1].recorded_at.isoformat().startswith("2026-09-20T10:30:00")
+
+    assert history[0].recorded_at < history[1].recorded_at
+

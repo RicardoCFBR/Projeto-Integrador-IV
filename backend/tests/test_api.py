@@ -2,6 +2,8 @@ from datetime import UTC, datetime
 
 from tests.conftest import reading
 
+from decimal import Decimal
+
 
 def _model_payload(version: str = "0.1.0") -> dict:
     return {
@@ -187,3 +189,18 @@ def _as_utc(value: str) -> datetime:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=UTC)
     return parsed.astimezone(UTC)
+
+
+def test_ingest_preserves_fractional_cycle_count(client):
+    payload = {"readings": [reading(cycle_count=123.45)]}
+    response = client.post("/telemetry", json=payload)
+    assert response.status_code == 201, response.text
+
+    history = client.get("/devices/DEVICE-0001/telemetry").json()
+    assert len(history) == 1
+    assert Decimal(str(history[0]["cycle_count"])) == Decimal("123.45")
+
+    history_response = client.get("/devices/DEVICE-0001/telemetry")
+    assert history_response.status_code == 200, history_response.text
+    
+    history = history_response.json()
